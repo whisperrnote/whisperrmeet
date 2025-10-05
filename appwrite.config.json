@@ -1,7 +1,7 @@
 {
     "projectId": "whisperrmeet",
     "endpoint": "https://fra.cloud.appwrite.io/v1",
-    "projectName": "whisperrmeet",
+    "projectName": "WhisperMeet - Video Conferencing Platform",
     "settings": {
         "services": {
             "account": true,
@@ -20,7 +20,7 @@
         "auth": {
             "methods": {
                 "jwt": true,
-                "phone": true,
+                "phone": false,
                 "invites": true,
                 "anonymous": true,
                 "email-otp": true,
@@ -34,9 +34,916 @@
                 "passwordHistory": 0,
                 "passwordDictionary": false,
                 "personalDataCheck": false,
-                "sessionAlerts": false,
+                "sessionAlerts": true,
                 "mockNumbers": []
             }
         }
-    }
+    },
+    "databases": [
+        {
+            "$id": "meetingsDB",
+            "name": "MeetingsDatabase",
+            "enabled": true
+        }
+    ],
+    "tables": [
+        {
+            "$id": "users",
+            "$permissions": [
+                "create(\"users\")",
+                "read(\"any\")",
+                "update(\"users\")",
+                "delete(\"users\")"
+            ],
+            "databaseId": "meetingsDB",
+            "name": "Users",
+            "enabled": true,
+            "rowSecurity": true,
+            "columns": [
+                {
+                    "key": "userId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "displayName",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 100,
+                    "default": null
+                },
+                {
+                    "key": "email",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "format": "email",
+                    "size": 320,
+                    "default": null
+                },
+                {
+                    "key": "avatarUrl",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "format": "url",
+                    "size": 255,
+                    "default": null
+                },
+                {
+                    "key": "avatarFileId",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "preferences",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null
+                },
+                {
+                    "key": "createdAt",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "updatedAt",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "idx_userId",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": ["userId"],
+                    "orders": ["ASC"]
+                },
+                {
+                    "key": "idx_email",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": ["email"],
+                    "orders": ["ASC"]
+                }
+            ]
+        },
+        {
+            "$id": "meetings",
+            "$permissions": [
+                "create(\"users\")",
+                "read(\"any\")",
+                "update(\"users\")",
+                "delete(\"users\")"
+            ],
+            "databaseId": "meetingsDB",
+            "name": "Meetings",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "meetingId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "hostId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "title",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 200,
+                    "default": null
+                },
+                {
+                    "key": "description",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null
+                },
+                {
+                    "key": "type",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 255,
+                    "default": "instant",
+                    "format": "enum",
+                    "elements": ["instant", "scheduled", "recurring"]
+                },
+                {
+                    "key": "status",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 255,
+                    "default": "scheduled",
+                    "format": "enum",
+                    "elements": ["scheduled", "active", "ended", "cancelled"]
+                },
+                {
+                    "key": "startTime",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "endTime",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "scheduledDuration",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 480,
+                    "default": 60
+                },
+                {
+                    "key": "isRecording",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                },
+                {
+                    "key": "recordingFileId",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "encryptionKey",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": true
+                },
+                {
+                    "key": "maxParticipants",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 2,
+                    "max": 1000,
+                    "default": 100
+                },
+                {
+                    "key": "participantCount",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 1000,
+                    "default": 0
+                },
+                {
+                    "key": "settings",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null
+                },
+                {
+                    "key": "createdAt",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "updatedAt",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "idx_meetingId",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": ["meetingId"],
+                    "orders": ["ASC"]
+                },
+                {
+                    "key": "idx_hostId",
+                    "type": "key",
+                    "status": "available",
+                    "columns": ["hostId"],
+                    "orders": ["ASC"]
+                },
+                {
+                    "key": "idx_status",
+                    "type": "key",
+                    "status": "available",
+                    "columns": ["status"],
+                    "orders": ["ASC"]
+                },
+                {
+                    "key": "idx_startTime",
+                    "type": "key",
+                    "status": "available",
+                    "columns": ["startTime"],
+                    "orders": ["DESC"]
+                }
+            ]
+        },
+        {
+            "$id": "participants",
+            "$permissions": [
+                "create(\"users\")",
+                "read(\"any\")",
+                "update(\"users\")",
+                "delete(\"users\")"
+            ],
+            "databaseId": "meetingsDB",
+            "name": "Participants",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "participantId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "meetingId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "userId",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "displayName",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 100,
+                    "default": null
+                },
+                {
+                    "key": "isAnonymous",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                },
+                {
+                    "key": "role",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 255,
+                    "default": "participant",
+                    "format": "enum",
+                    "elements": ["host", "co-host", "participant"]
+                },
+                {
+                    "key": "status",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 255,
+                    "default": "waiting",
+                    "format": "enum",
+                    "elements": ["waiting", "joined", "left"]
+                },
+                {
+                    "key": "joinedAt",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "leftAt",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "connectionId",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "audioEnabled",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": true
+                },
+                {
+                    "key": "videoEnabled",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": true
+                },
+                {
+                    "key": "screenSharing",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "idx_participantId",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": ["participantId"],
+                    "orders": ["ASC"]
+                },
+                {
+                    "key": "idx_meetingId",
+                    "type": "key",
+                    "status": "available",
+                    "columns": ["meetingId"],
+                    "orders": ["ASC"]
+                },
+                {
+                    "key": "idx_userId",
+                    "type": "key",
+                    "status": "available",
+                    "columns": ["userId"],
+                    "orders": ["ASC"]
+                }
+            ]
+        },
+        {
+            "$id": "chatMessages",
+            "$permissions": [
+                "create(\"users\")",
+                "read(\"any\")",
+                "update(\"users\")",
+                "delete(\"users\")"
+            ],
+            "databaseId": "meetingsDB",
+            "name": "ChatMessages",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "messageId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "meetingId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "senderId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "senderName",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 100,
+                    "default": null
+                },
+                {
+                    "key": "content",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 2000,
+                    "default": null
+                },
+                {
+                    "key": "type",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 255,
+                    "default": "text",
+                    "format": "enum",
+                    "elements": ["text", "file", "system"]
+                },
+                {
+                    "key": "fileId",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "timestamp",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "isEncrypted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": true
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "idx_messageId",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": ["messageId"],
+                    "orders": ["ASC"]
+                },
+                {
+                    "key": "idx_meetingId_time",
+                    "type": "key",
+                    "status": "available",
+                    "columns": ["meetingId", "timestamp"],
+                    "orders": ["ASC", "ASC"]
+                }
+            ]
+        },
+        {
+            "$id": "recordings",
+            "$permissions": [
+                "create(\"users\")",
+                "read(\"any\")",
+                "update(\"users\")",
+                "delete(\"users\")"
+            ],
+            "databaseId": "meetingsDB",
+            "name": "Recordings",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "recordingId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "meetingId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "fileId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "fileName",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "fileSize",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 2147483647,
+                    "default": null
+                },
+                {
+                    "key": "duration",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 86400,
+                    "default": null
+                },
+                {
+                    "key": "thumbnailFileId",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "status",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 255,
+                    "default": "processing",
+                    "format": "enum",
+                    "elements": ["processing", "ready", "failed"]
+                },
+                {
+                    "key": "createdAt",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "expiresAt",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "idx_recordingId",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": ["recordingId"],
+                    "orders": ["ASC"]
+                },
+                {
+                    "key": "idx_meetingId",
+                    "type": "key",
+                    "status": "available",
+                    "columns": ["meetingId"],
+                    "orders": ["ASC"]
+                }
+            ]
+        },
+        {
+            "$id": "polls",
+            "$permissions": [
+                "create(\"users\")",
+                "read(\"any\")",
+                "update(\"users\")",
+                "delete(\"users\")"
+            ],
+            "databaseId": "meetingsDB",
+            "name": "Polls",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "pollId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "meetingId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "creatorId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "question",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 500,
+                    "default": null
+                },
+                {
+                    "key": "options",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 1000,
+                    "default": null
+                },
+                {
+                    "key": "votes",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 2000,
+                    "default": null
+                },
+                {
+                    "key": "totalVotes",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 10000,
+                    "default": 0
+                },
+                {
+                    "key": "isActive",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": true
+                },
+                {
+                    "key": "createdAt",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "idx_pollId",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": ["pollId"],
+                    "orders": ["ASC"]
+                },
+                {
+                    "key": "idx_meetingId",
+                    "type": "key",
+                    "status": "available",
+                    "columns": ["meetingId"],
+                    "orders": ["ASC"]
+                }
+            ]
+        },
+        {
+            "$id": "reactions",
+            "$permissions": [
+                "create(\"users\")",
+                "read(\"any\")",
+                "update(\"users\")",
+                "delete(\"users\")"
+            ],
+            "databaseId": "meetingsDB",
+            "name": "Reactions",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "reactionId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "meetingId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "userId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 256,
+                    "default": null
+                },
+                {
+                    "key": "userName",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 100,
+                    "default": null
+                },
+                {
+                    "key": "emoji",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 10,
+                    "default": null
+                },
+                {
+                    "key": "timestamp",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "idx_reactionId",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": ["reactionId"],
+                    "orders": ["ASC"]
+                },
+                {
+                    "key": "idx_meetingId",
+                    "type": "key",
+                    "status": "available",
+                    "columns": ["meetingId"],
+                    "orders": ["ASC"]
+                }
+            ]
+        }
+    ],
+    "buckets": [
+        {
+            "$id": "avatars",
+            "$permissions": [
+                "create(\"users\")",
+                "read(\"any\")",
+                "update(\"users\")",
+                "delete(\"users\")"
+            ],
+            "fileSecurity": false,
+            "name": "User Avatars",
+            "enabled": true,
+            "maximumFileSize": 5000000,
+            "allowedFileExtensions": ["jpg", "jpeg", "png", "gif", "webp"],
+            "compression": "gzip",
+            "encryption": true,
+            "antivirus": true
+        },
+        {
+            "$id": "recordings",
+            "$permissions": [
+                "create(\"users\")",
+                "read(\"any\")",
+                "update(\"users\")",
+                "delete(\"users\")"
+            ],
+            "fileSecurity": false,
+            "name": "Meeting Recordings",
+            "enabled": true,
+            "maximumFileSize": 2000000000,
+            "allowedFileExtensions": ["webm", "mp4", "mkv"],
+            "compression": "gzip",
+            "encryption": true,
+            "antivirus": true
+        },
+        {
+            "$id": "backgrounds",
+            "$permissions": [
+                "create(\"users\")",
+                "read(\"any\")",
+                "update(\"users\")",
+                "delete(\"users\")"
+            ],
+            "fileSecurity": false,
+            "name": "Virtual Backgrounds",
+            "enabled": true,
+            "maximumFileSize": 10000000,
+            "allowedFileExtensions": ["jpg", "jpeg", "png", "webp"],
+            "compression": "gzip",
+            "encryption": true,
+            "antivirus": true
+        },
+        {
+            "$id": "attachments",
+            "$permissions": [
+                "create(\"users\")",
+                "read(\"any\")",
+                "update(\"users\")",
+                "delete(\"users\")"
+            ],
+            "fileSecurity": false,
+            "name": "Chat Attachments",
+            "enabled": true,
+            "maximumFileSize": 50000000,
+            "allowedFileExtensions": [],
+            "compression": "gzip",
+            "encryption": true,
+            "antivirus": true
+        }
+    ]
 }
