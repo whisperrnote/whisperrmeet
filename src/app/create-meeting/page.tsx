@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { createMeeting } from '@/lib/appwrite/meetings';
 import { getCurrentUser, loginAnonymously } from '@/lib/appwrite/auth';
 import { getMeetingUrl, copyToClipboard } from '@/lib/utils/meeting';
+import type { Models } from 'appwrite';
 
 export default function CreateMeetingPage() {
   const router = useRouter();
@@ -15,7 +16,7 @@ export default function CreateMeetingPage() {
   const [meetingTitle, setMeetingTitle] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [createdMeetingId, setCreatedMeetingId] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<Models.User<Models.Preferences> | null>(null);
 
   useEffect(() => {
     checkAuth();

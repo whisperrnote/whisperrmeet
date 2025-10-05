@@ -5,7 +5,7 @@ export interface User {
   email?: string;
   avatarUrl?: string;
   avatarFileId?: string;
-  preferences?: Record<string, any>;
+  preferences?: Record<string, unknown>;
   createdAt?: string;
   updatedAt?: string;
 }

@@ -4,7 +4,7 @@ import type { User } from '@/types';
 
 export async function createAccount(email: string, password: string, name: string) {
   try {
-    const account Response = await account.create(ID.unique(), email, password, name);
+    const accountResponse = await account.create(ID.unique(), email, password, name);
     
     // Create user profile in database
     await databases.createDocument(
@@ -72,7 +72,7 @@ export async function logout() {
 export async function getCurrentUser(): Promise<Models.User<Models.Preferences> | null> {
   try {
     return await account.get();
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -82,17 +82,16 @@ export async function getUserProfile(userId: string): Promise<User | null> {
     const response = await databases.listDocuments(
       DATABASE_ID,
       COLLECTIONS.USERS,
-      [
-        // Query.equal('userId', userId)
-      ]
+      []
     );
     
     if (response.documents.length > 0) {
-      return response.documents[0] as unknown as User;
+      const userDoc = response.documents.find((doc) => (doc as unknown as User).userId === userId);
+      return userDoc ? (userDoc as unknown as User) : null;
     }
     return null;
-  } catch (error) {
-    console.error('Error fetching user profile:', error);
+  } catch (err) {
+    console.error('Error fetching user profile:', err);
     return null;
   }
 }
