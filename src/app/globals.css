@@ -1,26 +1,187 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #faf6f0;
+  --foreground: #1a0f0a;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  
+  /* Brown shades */
+  --color-brown-950: #1a0f0a;
+  --color-brown-900: #2d1810;
+  --color-brown-800: #3d2415;
+  --color-brown-700: #5c3a21;
+  --color-brown-600: #7a4f2d;
+  --color-brown-500: #996639;
+  --color-brown-400: #b88445;
+  --color-brown-300: #d4a574;
+  --color-brown-200: #e6c9a8;
+  --color-brown-100: #f2e5d7;
+  --color-brown-50: #faf6f0;
+
+  /* Ash shades */
+  --color-ash-950: #0a0a0a;
+  --color-ash-900: #1a1a1a;
+  --color-ash-800: #2a2a2a;
+  --color-ash-700: #404040;
+  --color-ash-600: #575757;
+  --color-ash-500: #737373;
+  --color-ash-400: #8f8f8f;
+  --color-ash-300: #ababab;
+  --color-ash-200: #c7c7c7;
+  --color-ash-100: #e3e3e3;
+  --color-ash-50: #f5f5f5;
+
+  /* Sun-yellow shades */
+  --color-sun-950: #3d2500;
+  --color-sun-900: #5c3800;
+  --color-sun-800: #7a4c00;
+  --color-sun-700: #996000;
+  --color-sun-600: #b87400;
+  --color-sun-500: #d68800;
+  --color-sun-400: #f5a623;
+  --color-sun-300: #ffc048;
+  --color-sun-200: #ffd876;
+  --color-sun-100: #ffecb3;
+  --color-sun-50: #fff8e1;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #1a0f0a;
+    --foreground: #f2e5d7;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
 }
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(122, 79, 45, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-brown-400);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brown-500);
+}
+
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-brown-600);
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-brown-500);
+  }
+}
+
+/* Mosaic background */
+.mosaic-bg {
+  background-image: 
+    linear-gradient(45deg, rgba(122, 79, 45, 0.03) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(122, 79, 45, 0.03) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(122, 79, 45, 0.03) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(122, 79, 45, 0.03) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .mosaic-bg {
+    background-image: 
+      linear-gradient(45deg, rgba(255, 255, 255, 0.02) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(255, 255, 255, 0.02) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.02) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.02) 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  }
+}
+
+/* Glassmorphism */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(122, 79, 45, 0.2);
+}
+
+@media (prefers-color-scheme: dark) {
+  .glass {
+    background: rgba(26, 15, 10, 0.7);
+    border: 1px solid rgba(242, 229, 215, 0.1);
+  }
+}
+
+/* Custom focus styles */
+*:focus-visible {
+  outline: 2px solid var(--color-sun-400);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Remove default styles */
+button, input, textarea, select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Smooth animations */
+* {
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
